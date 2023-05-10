@@ -63,7 +63,7 @@ class ChatWindow(QWidget):
             color: white;
             border: none;
             border-radius: 20px;
-            padding: 20px 30px;
+            padding: 10px 30px;
         ''')
         send_button.clicked.connect(self.send_message)
         layout.addWidget(send_button, alignment=Qt.AlignRight)
