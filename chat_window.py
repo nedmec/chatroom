@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, QL
                              QPushButton, QLabel, QSizePolicy, QListWidget, QListWidgetItem)
 from chat_api import get_ai_response
 from chat_history import save_chat_history, load_chat_history
-
+from my_chatbot_model import generate_response
 class ChatWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -28,8 +28,8 @@ class ChatWindow(QWidget):
         # 聊天界面
         layout = QVBoxLayout()
 
-        app_name_label = QLabel('ChatGPT')
-        app_name_label.setStyleSheet('font-size: 40px; font-weight: bold;')
+        app_name_label = QLabel('Chat')
+        app_name_label.setStyleSheet('font-size: 25px; font-weight: bold;')
         app_name_label.setAlignment(Qt.AlignHCenter)
         layout.addWidget(app_name_label)
 
@@ -37,9 +37,9 @@ class ChatWindow(QWidget):
         self.chat_area.setReadOnly(True)
         self.chat_area.setStyleSheet('''
             background-color: #f0f0f0;
-            font-size: 40px;
+            font-size: 25px;
             border: 1px solid #ccc;
-            border-radius: 20px;
+            border-radius: 10px;
             padding: 5px;
             margin-bottom: 5px;
         ''')
@@ -47,7 +47,7 @@ class ChatWindow(QWidget):
 
         self.message_input = QLineEdit()
         self.message_input.setStyleSheet('''
-            font-size: 14px;
+            font-size: 25px;
             border: 1px solid #ccc;
             border-radius: 5px;
             padding: 5px;
@@ -58,12 +58,12 @@ class ChatWindow(QWidget):
         send_button = QPushButton('发送')
         send_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         send_button.setStyleSheet('''
-            font-size: 40px;
+            font-size: 25px;
             background-color: #007BFF;
             color: white;
             border: none;
-            border-radius: 20px;
-            padding: 10px 30px;
+            border-radius: 10px;
+            padding: 5px 15px;
         ''')
         send_button.clicked.connect(self.send_message)
         layout.addWidget(send_button, alignment=Qt.AlignRight)
@@ -74,7 +74,7 @@ class ChatWindow(QWidget):
         main_layout.addLayout(layout)
         self.setLayout(main_layout)
 
-        self.add_friends(["机器人", "Friend 2", "Friend 3"])
+        self.add_friends(["机器人", "开放域", "好友"])
 
         self.show()
 
@@ -97,8 +97,15 @@ class ChatWindow(QWidget):
         self.chat_area.append(f"你: {message}")
         self.message_input.clear()
 
-        ai_response = get_ai_response(message)
-        self.chat_area.append(f"AI: {ai_response}")
+        if self.current_friend == "机器人":
+            response = get_ai_response(message)
+        if self.current_friend == "开放域":
+            response = generate_response(message)
+        # if self.current_friend == "好友":
+        #      response = generate_response(message)
+
+        
+        self.chat_area.append(f"{self.current_friend}: {response}")
 
         chat_history = self.chat_area.toPlainText().split('\n')
         save_chat_history(self.current_friend, chat_history)
